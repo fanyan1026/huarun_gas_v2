@@ -45,22 +45,29 @@ MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIi4Gb8iOGcc05iqNilFb1gM6/iG4fSiECeEaEYN2cxaBVT+
 # ==============================
 # 错误码（用于多语言提示）
 # ==============================
-ERROR_INVALID_CNO = "error_invalid_cno"  # 无效账号错误键
-ERROR_INVALID_INTERVAL = "error_invalid_interval"  # 无效更新间隔错误键
-ERROR_CNO_NOT_FOUND = "error_cno_not_found"  # 账号不存在错误键
-ERROR_API_FORMAT = "error_api_format"  # API格式错误键
+ERROR_INVALID_CNO = "errors.error_invalid_cno"  # 无效账号错误键
+ERROR_INVALID_INTERVAL = "errors.error_invalid_interval"  # 无效更新间隔错误键
+ERROR_CNO_NOT_FOUND = "errors.error_cno_not_found"  # 账号不存在错误键
+ERROR_API_FORMAT = "errors.error_api_format"  # API格式错误键
 
 # ==============================
-# 翻译键（与 translations 文件夹中的键对应）
+# 翻译键路径（与 translations 文件夹中的键对应）
 # ==============================
 # 配置流程字段翻译键（对应 config_flow 表单字段）
-ATTR_CNO = "attr_cno"  # 账号字段标签
-ATTR_NAME = "attr_name"  # 名称字段标签
-ATTR_UPDATE_INTERVAL = "attr_update_interval"  # 更新间隔字段标签
+ATTR_CNO = "step.user.data.attr_cno"  # 账号字段标签
+ATTR_NAME = "step.user.data.attr_name"  # 名称字段标签
+ATTR_UPDATE_INTERVAL = "step.user.data.attr_update_interval"  # 更新间隔字段标签
 
-# 配置流程步骤描述翻译键（可选，用于步骤标题/描述）
+# 配置流程步骤描述翻译键
 FLOW_STEP_USER_TITLE = "step.user.title"  # 用户配置步骤标题
 FLOW_STEP_USER_DESCRIPTION = "step.user.description"  # 用户配置步骤描述
+FLOW_STEP_OPTIONS_TITLE = "step.options.title"  # 选项配置步骤标题
+FLOW_STEP_OPTIONS_DESCRIPTION = "step.options.description"  # 选项配置步骤描述
+
+# 日志信息翻译键
+LOG_SETUP_ENTRY = "log.setup_entry"  # 加载配置项日志
+LOG_PLATFORM_LOAD_FAILED = "log.platform_load_failed"  # 平台加载失败日志
+LOG_UNLOAD_ENTRY = "log.unload_entry"  # 卸载配置项日志
 
 # ==============================
 # 配置验证 Schema（用于校验用户输入）
