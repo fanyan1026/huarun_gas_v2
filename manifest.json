@@ -1,0 +1,16 @@
+{
+  "domain": "huarun_gas_v2",
+  "name": "华润燃气 v2",
+  "version": "2.0.0",
+  "requirements": [
+    "cryptography>=38.0.0",
+    "aiohttp>=3.8.0"
+  ],
+  "dependencies": [],
+  "codeowners": ["@fanyan1026"],
+  "config_flow": true,
+  "documentation": "https://github.com/fanyan1026/huarun-gas-v2",
+  "issue_tracker": "https://github.com/fanyan1026/huarun-gas-v2/issues",
+  "icon": "icon.png",
+  "iot_class": "cloud_polling"
+}
