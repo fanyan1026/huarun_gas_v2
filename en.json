@@ -1,0 +1,27 @@
+{
+  "config_flow": {
+    "step": {
+      "user": {
+        "title": "China Resources Gas Configuration",
+        "description": "Please enter your China Resources Gas account information",
+        "data": {
+          "attr_cno": "User Account Number",
+          "attr_name": "Sensor Name",
+          "attr_update_interval": "Data Update Interval (hours)"
+        }
+      }
+    },
+    "errors": {
+      "error_invalid_cno": "Please enter a 10-digit user account number",
+      "error_invalid_interval": "Update interval must be between 1-72 hours",
+      "error_cno_not_found": "Account not found. Please check and re-enter",
+      "error_api_format": "API format error. Please contact developer"
+    },
+    "log": {
+      "setup_entry": "Loading configuration entry {entry_id} (Title: {title})",
+      "platform_load_failed": "Platform loading failed: {error}",
+      "unload_entry": "Unloading configuration entry {entry_id}",
+      "data_stale": "Data is stale. Last update time: {timestamp}"
+    }
+  }
+}
