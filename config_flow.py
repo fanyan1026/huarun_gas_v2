@@ -38,17 +38,14 @@ class HuaRunGasV2FlowHandler(config_entries.ConfigFlow):
         await i18n.init_async()
 
         if user_input:
-            # 验证账号格式（10位数字）
             cno = user_input.get(CONF_CNO)
-            if not (cno and len(cno) == 10 and cno.isdigit()):
+            if not self._validate_cno_format(cno):
                 errors[CONF_CNO] = ERROR_INVALID_CNO
             else:
-                # 验证账号是否存在（API请求）
                 valid, error_code = await self._validate_cno_with_api(cno)
                 if not valid:
                     errors[CONF_CNO] = error_code
 
-            # 验证更新间隔
             interval, interval_error = self._validate_update_interval(
                 user_input.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL)
             )
@@ -69,37 +66,36 @@ class HuaRunGasV2FlowHandler(config_entries.ConfigFlow):
                     },
                 )
 
-        # 加载翻译文本
-        translations = await i18n._load_translations(self.hass.config.language)
-
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema({
                 vol.Required(
                     CONF_CNO,
-                    description={"name": translations.get(f"data.{ATTR_CNO}", "User Account Number")}
+                    description={"name": i18n.get_text("step.user.data.attr_cno", "用户编号")}
                 ): str,
                 vol.Optional(
                     CONF_NAME,
                     default=DEFAULT_NAME,
-                    description={"name": translations.get(f"data.{ATTR_NAME}", "Sensor Name")}
+                    description={"name": i18n.get_text("step.user.data.attr_name", "传感器名称")}
                 ): str,
                 vol.Optional(
                     CONF_UPDATE_INTERVAL,
                     default=str(DEFAULT_UPDATE_INTERVAL),
                     description={
-                        "name": translations.get(f"data.{ATTR_UPDATE_INTERVAL}", "Update Interval (hours)"),
-                        "description": f"({MIN_UPDATE_INTERVAL}-{MAX_UPDATE_INTERVAL} hours)"
+                        "name": i18n.get_text("step.user.data.attr_update_interval", "数据更新间隔（小时）"),
+                        "description": f"({MIN_UPDATE_INTERVAL}-{MAX_UPDATE_INTERVAL}小时)"
                     }
                 ): str,
             }),
-            errors={k: translations.get(f"errors.{v}", v) for k, v in errors.items()},
+            errors={k: i18n.get_text(f"errors.{v}", v) for k, v in errors.items()},
         )
+
+    def _validate_cno_format(self, cno):
+        return cno and len(cno) == 10 and cno.isdigit()
 
     async def _validate_cno_with_api(self, cno):
         """通过API验证账号是否存在"""
         try:
-            # 加密参数
             public_key = serialization.load_pem_public_key(PUBLIC_KEY_PEM.encode())
             timestamp = int(time.time() * 1000)
             random_num = random.randint(1000, 9999)
@@ -107,13 +103,11 @@ class HuaRunGasV2FlowHandler(config_entries.ConfigFlow):
             encrypted_data = public_key.encrypt(data_to_encrypt.encode(), padding.PKCS1v15())
             base64_encrypted = base64.urlsafe_b64encode(encrypted_data).decode()
 
-            # 构建请求
             request_body = {"USER": "bizH5", "PWD": base64_encrypted}
             base64_body = base64.urlsafe_b64encode(json.dumps(request_body).encode()).decode()
             url = f"{API_URL}?authVersion={API_AUTH_VERSION}&consNo={cno}"
             headers = {"Content-Type": "application/json", "Param": base64_body}
 
-            # 发送请求
             session = async_get_clientsession(self.hass)
             async with session.get(url, headers=headers, timeout=30) as resp:
                 resp_text = await resp.text()
@@ -140,34 +134,30 @@ class HuaRunGasV2FlowHandler(config_entries.ConfigFlow):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry: ConfigEntry):
-        # 修复：创建OptionsFlowHandler时不传递参数
-        return OptionsFlowHandler()
+        return OptionsFlowHandler(config_entry)
 
 
 class OptionsFlowHandler(config_entries.OptionsFlow):
-    """选项流程处理器"""
+    def __init__(self, config_entry: ConfigEntry):
+        super().__init__()
 
     async def async_step_init(self, user_input=None):
         """选项配置步骤"""
         errors = {}
-        # 直接使用基类提供的self.config_entry
         current_data = self.config_entry.data
         i18n = HuarunI18n(self.hass, DOMAIN)
         await i18n.init_async()
-        translations = await i18n._load_translations(self.hass.config.language)
 
         if user_input:
             new_cno = user_input[CONF_CNO]
-            # 验证账号变更
             if new_cno != current_data[CONF_CNO]:
-                if not (new_cno and len(new_cno) == 10 and new_cno.isdigit()):
+                if not self._validate_cno_format(new_cno):
                     errors[CONF_CNO] = ERROR_INVALID_CNO
                 else:
                     valid, error_code = await self._validate_cno_with_api(new_cno)
                     if not valid:
                         errors[CONF_CNO] = error_code
 
-            # 验证更新间隔
             interval, interval_error = self._validate_update_interval(
                 user_input.get(CONF_UPDATE_INTERVAL, current_data[CONF_UPDATE_INTERVAL])
             )
@@ -175,7 +165,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 errors[CONF_UPDATE_INTERVAL] = interval_error
 
             if not errors:
-                # 更新配置
                 self.hass.config_entries.async_update_entry(
                     self.config_entry,
                     data={
@@ -193,23 +182,28 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 vol.Required(
                     CONF_CNO,
                     default=current_data[CONF_CNO],
-                    description={"name": translations.get(f"data.{ATTR_CNO}", "User Account Number")}
+                    description={"name": i18n.get_text("step.options.data.attr_cno", ATTR_CNO)}
                 ): str,
                 vol.Optional(
                     CONF_NAME,
                     default=current_data.get(CONF_NAME, DEFAULT_NAME),
-                    description={"name": translations.get(f"data.{ATTR_NAME}", "Sensor Name")}
+                    description={"name": i18n.get_text("step.options.data.attr_name", ATTR_NAME)}
                 ): str,
                 vol.Optional(
                     CONF_UPDATE_INTERVAL,
                     default=str(current_data[CONF_UPDATE_INTERVAL]),
-                    description={"name": translations.get(f"data.{ATTR_UPDATE_INTERVAL}", "Update Interval (hours)")}
+                    description={
+                        "name": i18n.get_text("step.options.data.attr_update_interval", ATTR_UPDATE_INTERVAL),
+                        "description": f"({MIN_UPDATE_INTERVAL}-{MAX_UPDATE_INTERVAL}小时)"
+                    }
                 ): str,
             }),
-            errors={k: translations.get(f"errors.{v}", v) for k, v in errors.items()},
+            errors={k: i18n.get_text(f"errors.{v}", v) for k, v in errors.items()},
         )
 
-    # 复用验证方法
+    def _validate_cno_format(self, cno):
+        return cno and len(cno) == 10 and cno.isdigit()
+
     async def _validate_cno_with_api(self, cno):
         return await HuaRunGasV2FlowHandler._validate_cno_with_api(self, cno)
 
