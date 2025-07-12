@@ -26,9 +26,10 @@
             "unload_entry": "卸载配置项 {entry_id}"
         },
         "errors": {
-            "invalid_cno": "无效账号",
-            "invalid_interval": "无效更新间隔",
-            "cno_not_found": "账号不存在"
+            "error_invalid_cno": "无效账号",
+            "error_invalid_interval": "无效更新间隔",
+            "error_cno_not_found": "账号不存在",
+            "error_api_format": "API格式错误"
         }
     }
 }
