@@ -22,13 +22,14 @@
         },
         "log": {
             "setup_entry": "Load configuration entry {entry_id} (Title: {title})",
-            "unload_entry": "Unload configuration entry {entry_id}",
-            "platform_load_failed": "Platform loading failed: {error}"
+            "platform_load_failed": "Platform loading failed: {error}",
+            "unload_entry": "Unload configuration entry {entry_id}"
         },
         "errors": {
-            "invalid_cno": "Invalid account number",
-            "invalid_interval": "Invalid update interval",
-            "cno_not_found": "Account number not found"
+            "error_invalid_cno": "Invalid account number",
+            "error_invalid_interval": "Invalid update interval",
+            "error_cno_not_found": "Account number not found",
+            "error_api_format": "API format error"
         }
     }
 }
