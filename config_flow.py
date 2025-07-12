@@ -34,9 +34,9 @@ class HuaRunGasV2FlowHandler(config_entries.ConfigFlow):
     async def async_step_user(self, user_input=None):
         """用户配置步骤"""
         errors = {}
-        i18n = HuarunI18n(self.hass, DOMAIN)
-        await i18n.init_async()
-
+        
+        i18n = self.hass.data[DOMAIN]['i18n']
+        
         if user_input:
             cno = user_input.get(CONF_CNO)
             if not self._validate_cno_format(cno):
@@ -145,9 +145,9 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         """选项配置步骤"""
         errors = {}
         current_data = self.config_entry.data
-        i18n = HuarunI18n(self.hass, DOMAIN)
-        await i18n.init_async()
 
+        i18n = self.hass.data[DOMAIN]['i18n']
+        
         if user_input:
             new_cno = user_input[CONF_CNO]
             if new_cno != current_data[CONF_CNO]:
