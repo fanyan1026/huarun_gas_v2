@@ -22,6 +22,8 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     i18n = HuarunI18n(hass, DOMAIN)
     await i18n.init_async()
 
+    hass.data[DOMAIN]['i18n'] = i18n
+    
     setup_log_msg = i18n.get_text(LOG_SETUP_ENTRY, "加载配置项 {entry_id}（标题：{title}）")
     _LOGGER.info(setup_log_msg.format(entry_id=config_entry.entry_id, title=config_entry.title))
 
@@ -30,7 +32,6 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
 
     hass.data[DOMAIN][config_entry.entry_id] = {
         "config": config_entry.data,
-        "i18n": i18n
     }
 
     if CONF_UPDATE_INTERVAL not in config_entry.options:
@@ -52,7 +53,7 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
 
 async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """卸载配置项"""
-    i18n = hass.data[DOMAIN][config_entry.entry_id]["i18n"]
+    i18n = hass.data[DOMAIN]['i18n']
     unload_log_msg = i18n.get_text(LOG_UNLOAD_ENTRY, "卸载配置项 {entry_id}")
     _LOGGER.info(unload_log_msg.format(entry_id=config_entry.entry_id))
 
